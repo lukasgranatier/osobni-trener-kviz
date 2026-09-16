@@ -80,7 +80,10 @@
             <div class="start-actions">
               <button class="primary-button" id="startFull" type="button">Projít všech 120</button>
               <button class="secondary-button" id="startQuick" type="button">Rychlých 20</button>
-              <button class="text-button" id="startMix" type="button">Mix 30 ze všech oblastí</button>
+              <button class="secondary-button review-button" id="startReview" type="button" hidden>
+                Opakování chyb <span id="reviewCount">0</span>
+              </button>
+              <button class="text-button" id="startMix" type="button">Mix 60 ze všech oblastí</button>
             </div>
           </div>
 
@@ -115,6 +118,11 @@
             </div>
             <h2 id="questionText"></h2>
             <div class="answers" id="answers" role="group" aria-labelledby="questionText"></div>
+
+            <button class="skip-button" id="skipQuestion" type="button">
+              Přeskočit otázku
+              <kbd aria-hidden="true">S</kbd>
+            </button>
 
             <div class="feedback" id="feedback" hidden>
               <div class="feedback-icon" aria-hidden="true"></div>

@@ -9,10 +9,12 @@ Interaktivní český studijní kvíz pro kompetence profesní kvalifikace
 - 120 unikátních otázek v každé oblasti, celkem 1 320
 - 4 možnosti a právě 1 správná odpověď
 - vysvětlení a zdroje zobrazené až po správné odpovědi
-- rychlá série 20, celá kategorie 120 a vyvážený mix 30
+- rychlá série 20, celá kategorie 120 a vyvážený mix 60
+- přeskočení otázky a samostatný režim opakování chyb
+- pořadí otázek losované, s předností pro neviděné a dříve chybné
 - průběh uložený pouze lokálně v prohlížeči
 - světlý, tmavý a automatický režim
-- responzivní rozhraní navržené primárně pro iPad
+- systémové písmo (na iPadu SF Pro) a rozhraní laděné pro iPad Air 11"
 
 Projekt nepoužívá framework, runtime závislosti, analytiku, cookies ani externí
 fonty. Jde o zdrojový statický web HTML/CSS/JS.
