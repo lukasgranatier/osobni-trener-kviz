@@ -9,7 +9,7 @@ function assert(condition, message) {
 }
 assert(CATEGORY_META.length === 11, `Očekáváno 11 kategorií, nalezeno ${CATEGORY_META.length}.`);
 assert(Object.keys(CONCEPTS).length === 11, `Datový soubor nemá 11 kategorií konceptů.`);
-assert(questions.length === 1100, `Očekáváno 1 100 otázek, nalezeno ${questions.length}.`);
+assert(questions.length === 1320, `Očekáváno 1 320 otázek, nalezeno ${questions.length}.`);
 
 const categoryIds = new Set(CATEGORY_META.map((category) => category.id));
 const sourceIds = new Set(Object.keys(SOURCES));
@@ -19,8 +19,8 @@ const signatures = new Set();
 for (const category of CATEGORY_META) {
   const concepts = CONCEPTS[category.id] ?? [];
   const categoryQuestions = questions.filter((question) => question.category === category.id);
-  assert(concepts.length === 25, `${category.title}: očekáváno 25 ověřených konceptů, nalezeno ${concepts.length}.`);
-  assert(categoryQuestions.length === 100, `${category.title}: očekáváno 100 otázek, nalezeno ${categoryQuestions.length}.`);
+  assert(concepts.length === 30, `${category.title}: očekáváno 30 ověřených konceptů, nalezeno ${concepts.length}.`);
+  assert(categoryQuestions.length === 120, `${category.title}: očekáváno 120 otázek, nalezeno ${categoryQuestions.length}.`);
 
   const terms = new Set();
   for (const concept of concepts) {
@@ -29,7 +29,7 @@ for (const category of CATEGORY_META) {
     assert(concept.definition.length >= 35, `${category.title}/${concept.term}: příliš krátká definice.`);
     assert(concept.example.length >= 35, `${category.title}/${concept.term}: příliš krátký příklad.`);
     assert(concept.importance.length >= 35, `${category.title}/${concept.term}: příliš krátké vysvětlení významu.`);
-    assert(concept.sources.length >= 1, `${category.title}/${concept.term}: chybí zdroj.`);
+    assert(concept.sources.length >= 2, `${category.title}/${concept.term}: každý pojem musí mít alespoň dva nezávislé zdroje.`);
     for (const sourceId of concept.sources) {
       assert(sourceIds.has(sourceId), `${category.title}/${concept.term}: neznámý zdroj ${sourceId}.`);
     }
@@ -65,7 +65,7 @@ const [html, css, app, netlify] = await Promise.all([
 
 assert(html.includes('lang="cs"'), "HTML nemá nastavenou češtinu.");
 assert(html.includes("viewport-fit=cover"), "Chybí bezpečná podpora iPad viewportu.");
-assert(html.includes("1 100 otázek"), "Úvod neuvádí úplný počet otázek.");
+assert(html.includes("1 320 otázek"), "Úvod neuvádí úplný počet otázek.");
 assert(css.includes("prefers-reduced-motion"), "Chybí režim omezeného pohybu.");
 assert(css.includes("safe-area-inset"), "Chybí podpora bezpečných okrajů zařízení.");
 assert(app.includes("textContent"), "Dynamické UI nepoužívá bezpečné textové vkládání.");

@@ -1355,3 +1355,334 @@ dialog::backdrop {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Tablet ergonomics + motion system
+   Cílová sestava: iPad Air 11" (M4) — 1180×820 pt landscape, 820×1180 portrait.
+   Easing a délky vycházejí z Material 3 motion tokenů.
+   ========================================================================== */
+
+:root {
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-xs: 100ms;
+  --dur-s: 200ms;
+  --dur-m: 300ms;
+  --dur-l: 450ms;
+  --dur-xl: 550ms;
+}
+
+/* --- Dotykové ovládání ---------------------------------------------------- */
+
+button,
+a,
+.answer-button,
+.category-button,
+summary {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.category-rail,
+.source-list,
+dialog {
+  overscroll-behavior: contain;
+}
+
+@media (hover: none) {
+  .category-button:hover {
+    background: transparent;
+  }
+
+  .category-button[aria-current="true"]:hover {
+    background: var(--surface-2);
+  }
+
+  .answer-button:hover:not(:disabled) {
+    border-color: var(--line);
+    background: var(--surface);
+    transform: none;
+  }
+
+  .primary-button:hover,
+  .secondary-button:hover,
+  .theme-toggle:hover,
+  .icon-button:hover {
+    filter: none;
+    transform: none;
+  }
+
+  /* Stisk je na dotyku jediná zpětná vazba, tak ať je čitelný. */
+  .answer-button:active:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: scale(0.988);
+  }
+
+  .category-button:active {
+    background: var(--surface-2);
+  }
+}
+
+@media (pointer: coarse) {
+  .answer-button {
+    min-height: 68px;
+    padding: 12px 20px 12px 14px;
+  }
+
+  .answer-key {
+    width: 40px;
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .answer-label {
+    font-size: 16px;
+  }
+
+  .category-button {
+    min-height: 60px;
+  }
+
+  .icon-button,
+  .theme-toggle {
+    min-height: 48px;
+  }
+}
+
+/* Obsah má stejnou výšku jako rail — rám aplikace stojí, roluje jen obsah. */
+@media (min-width: 721px) {
+  main {
+    display: flex;
+    height: calc(100vh - 124px - var(--safe-top) - var(--safe-bottom));
+    min-height: 0;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* --- Kvíz na tabletu naležato --------------------------------------------
+   Otázka i všechny čtyři možnosti se musí vejít bez scrollování.            */
+
+@media (min-width: 950px) and (max-height: 950px) {
+  /* Mrtvý prostor pod kartou je na tabletu k ničemu — karta ať ho využije. */
+  .quiz-view {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1;
+  }
+
+  /* Karta se vejde do výšky okna; dlouhé vysvětlení roluje uvnitř, ne celá stránka. */
+  .quiz-view > .question-sheet {
+    min-height: 0;
+    max-height: 100%;
+    flex: 1;
+    align-content: center;
+  }
+
+  .feedback {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .answers {
+    gap: 14px;
+  }
+
+  .question-sheet {
+    display: grid;
+    max-width: 1180px;
+    grid-template-columns: minmax(300px, 0.92fr) minmax(360px, 1.08fr);
+    grid-template-areas:
+      "meta    answers"
+      "heading answers"
+      "feed    answers"
+      "feed    next";
+    align-content: start;
+    column-gap: clamp(28px, 3.2vw, 48px);
+    padding: clamp(24px, 2.8vw, 36px);
+  }
+
+  .question-meta {
+    grid-area: meta;
+  }
+
+  .question-sheet h2 {
+    grid-area: heading;
+    margin: 16px 0 0;
+    font-size: clamp(22px, 2.15vw, 30px);
+  }
+
+  .answers {
+    grid-area: answers;
+  }
+
+  .feedback {
+    grid-area: feed;
+    margin-top: 22px;
+    align-self: start;
+  }
+
+  .next-button {
+    grid-area: next;
+    align-self: end;
+    margin-top: 18px;
+  }
+
+  .welcome-copy h1 {
+    font-size: clamp(38px, 4.4vw, 58px);
+  }
+
+  .welcome-view {
+    padding-top: clamp(26px, 3vw, 40px);
+    padding-bottom: clamp(18px, 2vw, 28px);
+    gap: clamp(32px, 4.5vw, 64px);
+  }
+}
+
+/* iPad naležato: rail musí ukázat všech 11 kompetencí bez vlastního scrollu. */
+@media (min-width: 950px) and (max-height: 880px) {
+  .category-button {
+    min-height: 50px;
+    padding: 6px 8px;
+  }
+
+  #categoryNav {
+    gap: 2px;
+  }
+
+  .rail-heading {
+    margin-bottom: 12px;
+  }
+
+  .category-rail {
+    padding-top: 22px;
+  }
+}
+
+/* iPad nastojato: širší obsahový sloupec, kompaktnější rail. */
+@media (min-width: 720px) and (max-width: 1100px) and (orientation: portrait) {
+  .app-shell {
+    grid-template-columns: 210px minmax(0, 1fr);
+  }
+
+  .question-sheet {
+    max-width: none;
+  }
+
+  .welcome-view {
+    align-content: start;
+  }
+}
+
+/* --- Motion --------------------------------------------------------------- */
+
+.question-sheet.is-entering {
+  animation: sheet-enter var(--dur-l) var(--ease-decelerate) both;
+}
+
+.question-sheet.is-leaving {
+  animation: sheet-leave var(--dur-s) var(--ease-accelerate) both;
+}
+
+@keyframes sheet-leave {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-10px); }
+}
+
+/* Odpovědi nabíhají postupně — čtenář stihne zaregistrovat pořadí. */
+.question-sheet.is-entering .answer-button {
+  animation: answer-enter var(--dur-m) var(--ease-decelerate) both;
+  animation-delay: calc(90ms + var(--i, 0) * 55ms);
+}
+
+@keyframes answer-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.answer-button.is-correct {
+  animation: answer-correct var(--dur-l) var(--ease-spring) both;
+}
+
+@keyframes answer-correct {
+  0% { transform: scale(1); }
+  38% { transform: scale(1.022); }
+  100% { transform: scale(1); }
+}
+
+.answer-button.is-correct .answer-key {
+  animation: key-pop var(--dur-l) var(--ease-spring) both;
+}
+
+@keyframes key-pop {
+  0% { transform: scale(0.72) rotate(-12deg); }
+  55% { transform: scale(1.12) rotate(3deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+.answer-button.is-wrong {
+  animation: answer-shake var(--dur-l) var(--ease-emphasized);
+}
+
+.feedback {
+  animation: feedback-enter var(--dur-m) var(--ease-decelerate) both;
+}
+
+@keyframes feedback-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-track progress::-webkit-progress-value {
+  transition: inline-size var(--dur-l) var(--ease-emphasized);
+}
+
+.category-button {
+  transition: background-color var(--dur-s) var(--ease-emphasized);
+}
+
+.result-view .result-ring,
+.result-view .result-copy {
+  animation: result-enter var(--dur-xl) var(--ease-decelerate) both;
+}
+
+.result-view .result-copy {
+  animation-delay: 90ms;
+}
+
+@keyframes result-enter {
+  from { opacity: 0; transform: translateY(16px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Krátký záblesk skóre, když přibude bod na první pokus. */
+.score-pill.is-bumped strong {
+  animation: score-bump var(--dur-l) var(--ease-spring) both;
+}
+
+@keyframes score-bump {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.28); color: var(--positive); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-sheet.is-entering,
+  .question-sheet.is-leaving,
+  .question-sheet.is-entering .answer-button,
+  .answer-button.is-correct,
+  .answer-button.is-correct .answer-key,
+  .answer-button.is-wrong,
+  .feedback,
+  .result-view .result-ring,
+  .result-view .result-copy,
+  .score-pill.is-bumped strong {
+    animation: none !important;
+  }
+}

@@ -144,7 +144,7 @@ function renderCategoryNav() {
       progress.classList.add("complete");
       progress.textContent = "✓";
     }
-    progress.setAttribute("aria-label", `${mastered} ze 100 zvládnuto`);
+    progress.setAttribute("aria-label", `${mastered} ze ${questionsByCategory[category.id].length} zvládnuto`);
 
     button.append(index, name, progress);
     button.addEventListener("click", () => selectCategory(category.id));
@@ -162,14 +162,15 @@ function selectCategory(categoryId) {
   elements.startTitle.textContent = category.title;
   elements.selectedNumber.textContent = String(category.index).padStart(2, "0");
   elements.selectedDescription.textContent = category.description;
-  elements.selectedProgress.textContent = `${mastered} / 100 zvládnuto`;
+  elements.selectedProgress.textContent = `${mastered} / ${questionsByCategory[selectedCategory].length} zvládnuto`;
+  elements.selectedMeter.max = questionsByCategory[selectedCategory].length;
   elements.selectedMeter.value = mastered;
   elements.selectedMeter.textContent = `${mastered} %`;
 }
 
 function updateProgressUi() {
   const mastered = persistedState.mastered.length;
-  elements.overallProgress.textContent = `${mastered.toLocaleString("cs-CZ")} / 1 100`;
+  elements.overallProgress.textContent = `${mastered.toLocaleString("cs-CZ")} / ${questionBank.length.toLocaleString("cs-CZ")}`;
   renderCategoryNav();
   selectCategory(selectedCategory);
 }
@@ -204,7 +205,7 @@ function startQuiz(mode, categoryId = selectedCategory) {
     questions = balancedMix(30);
     title = "Mix všech oblastí";
   } else {
-    const count = mode === "quick" ? 20 : 100;
+    const count = mode === "quick" ? 20 : questionsByCategory[categoryId].length;
     questions = pickQuestions(categoryId, count);
     title = CATEGORY_META.find((category) => category.id === categoryId).title;
   }
@@ -232,6 +233,7 @@ function renderQuestion() {
   const question = session.questions[session.index];
   session.hadWrongAttempt = false;
   session.answered = false;
+  session.transitioning = false;
   elements.quizCounter.textContent = `Otázka ${session.index + 1} z ${session.questions.length}`;
   elements.quizScore.textContent = String(session.firstTryCorrect);
   const progress = (session.index / session.questions.length) * 100;
@@ -261,6 +263,7 @@ function renderQuestion() {
     label.textContent = option;
 
     button.append(key, label);
+    button.style.setProperty("--i", String(index));
     button.addEventListener("click", () => checkAnswer(button, index));
     elements.answers.append(button);
   });
@@ -291,7 +294,10 @@ function checkAnswer(button, selectedIndex) {
   }
 
   session.answered = true;
-  if (!session.hadWrongAttempt) session.firstTryCorrect += 1;
+  if (!session.hadWrongAttempt) {
+    session.firstTryCorrect += 1;
+    bumpScore();
+  }
   [...elements.answers.querySelectorAll("button")].forEach((answer, index) => {
     answer.disabled = true;
     if (index === question.correctIndex) answer.classList.add("is-correct");
@@ -325,25 +331,66 @@ function checkAnswer(button, selectedIndex) {
   elements.nextQuestion.focus({ preventScroll: true });
 }
 
+const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function bumpScore() {
+  const pill = elements.quizScore.closest(".score-pill");
+  if (!pill || prefersReducedMotion()) return;
+  pill.classList.remove("is-bumped");
+  requestAnimationFrame(() => pill.classList.add("is-bumped"));
+}
+
+function countUp(element, target) {
+  // Výsledná hodnota je vidět i tehdy, když prohlížeč animační snímky nedoručí
+  // (běh na pozadí, úsporný režim). Animace je jen nadstavba.
+  element.textContent = `${target} %`;
+  if (prefersReducedMotion()) return;
+  const duration = 750;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - (1 - t) ** 3;
+    element.textContent = `${Math.round(target * eased)} %`;
+    if (t < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function transitionToQuestion() {
+  const sheet = elements.questionSheet;
+  if (prefersReducedMotion()) {
+    renderQuestion();
+    sheet.scrollIntoView({ behavior: "auto", block: "nearest" });
+    return;
+  }
+  sheet.classList.remove("is-entering");
+  sheet.classList.add("is-leaving");
+  window.setTimeout(() => {
+    sheet.classList.remove("is-leaving");
+    renderQuestion();
+    sheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, 200);
+}
+
 function goToNextQuestion() {
-  if (!session?.answered) return;
+  if (!session?.answered || session.transitioning) return;
+  session.transitioning = true;
   if (session.index === session.questions.length - 1) {
     finishQuiz();
     return;
   }
   session.index += 1;
-  renderQuestion();
-  elements.questionSheet.scrollIntoView({ behavior: "smooth", block: "start" });
+  transitionToQuestion();
 }
 
 function finishQuiz() {
   const percent = Math.round((session.firstTryCorrect / session.questions.length) * 100);
   elements.quizView.hidden = true;
   elements.resultView.hidden = false;
-  elements.resultPercent.textContent = `${percent} %`;
+  countUp(elements.resultPercent, percent);
   elements.resultTitle.textContent = percent >= 90 ? "Výborná jistota." : percent >= 70 ? "Pevný základ." : "Je na čem stavět.";
   elements.resultSummary.textContent = `Na první pokus jste správně vyřešili ${session.firstTryCorrect} z ${session.questions.length} otázek. Každou chybnou otázku jste nakonec zvládli správně.`;
-  elements.resultView.scrollIntoView({ behavior: "smooth", block: "start" });
+  elements.resultView.scrollIntoView({ behavior: "smooth", block: "nearest" });
   elements.repeatQuiz.focus({ preventScroll: true });
 }
 
@@ -409,6 +456,31 @@ function setupDialogs() {
   elements.aboutButton.addEventListener("click", () => elements.aboutDialog.showModal());
 }
 
+/* Švihnutí vlevo posune na další otázku, jakmile je zodpovězená. */
+function setupSwipeNavigation() {
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  elements.questionSheet.addEventListener("touchstart", (event) => {
+    if (event.touches.length !== 1) return;
+    tracking = true;
+    startX = event.touches[0].clientX;
+    startY = event.touches[0].clientY;
+  }, { passive: true });
+
+  elements.questionSheet.addEventListener("touchend", (event) => {
+    if (!tracking) return;
+    tracking = false;
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - startX;
+    const dy = touch.clientY - startY;
+    if (dx < -70 && Math.abs(dx) > Math.abs(dy) * 1.8 && !elements.nextQuestion.hidden) {
+      goToNextQuestion();
+    }
+  }, { passive: true });
+}
+
 function init() {
   let storedTheme = "auto";
   try {
@@ -420,6 +492,7 @@ function init() {
   applyTheme(storedTheme);
   renderSources();
   setupDialogs();
+  setupSwipeNavigation();
   updateProgressUi();
 
   elements.startFull.addEventListener("click", () => startQuiz("full"));
@@ -433,9 +506,16 @@ function init() {
 
   document.addEventListener("keydown", (event) => {
     if (elements.quizView.hidden || document.querySelector("dialog[open]")) return;
-    if (/^[1-4]$/.test(event.key) && !session?.answered) {
-      const index = Number(event.key) - 1;
-      elements.answers.querySelectorAll("button")[index]?.click();
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    const letterIndex = "abcd".indexOf(event.key.toLowerCase());
+    const digitIndex = /^[1-4]$/.test(event.key) ? Number(event.key) - 1 : -1;
+    const index = letterIndex >= 0 ? letterIndex : digitIndex;
+    if (index >= 0 && !session?.answered) {
+      const target = elements.answers.querySelectorAll("button")[index];
+      if (target && !target.disabled) {
+        event.preventDefault();
+        target.click();
+      }
     } else if ((event.key === "Enter" || event.key === "ArrowRight") && session?.answered) {
       event.preventDefault();
       goToNextQuestion();
