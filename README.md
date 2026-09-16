@@ -10,8 +10,10 @@ Interaktivní český studijní kvíz pro kompetence profesní kvalifikace
 - 4 možnosti a právě 1 správná odpověď
 - vysvětlení a zdroje zobrazené až po správné odpovědi
 - rychlá série 20, celá kategorie 120 a vyvážený mix 60
-- přeskočení otázky a samostatný režim opakování chyb
-- pořadí otázek losované, s předností pro neviděné a dříve chybné
+- zkouškový režim s pravidlem 70 % celkem a 60 % v každé oblasti
+- rozložené opakování: otázka se vrací podle toho, jak jistě ji umíte
+- přeskočení otázky, označení k pozdějšímu návratu a opakování chyb
+- rychlá cesta do nejslabší oblasti podle dosavadní úspěšnosti
 - průběh uložený pouze lokálně v prohlížeči
 - světlý, tmavý a automatický režim
 - systémové písmo (na iPadu SF Pro) a rozhraní laděné pro iPad Air 11"
@@ -38,6 +40,10 @@ Potom otevřete `http://127.0.0.1:8747/`.
 npm run qa
 npm run qa:links
 ```
+
+`npm run qa` vedle kontroly dat spouští i testy učební logiky
+(`scripts/study-test.mjs`): plánování opakování, pořadí podle splatnosti
+a zkouškové vyhodnocení.
 
 Kontrola ověřuje počet kategorií a otázek, unikátní možnosti, platný správný
 index, zdroje, lokalizaci, tabletové safe areas, omezení pohybu a bezpečnostní

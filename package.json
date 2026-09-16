@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "qa": "node scripts/qa.mjs",
+    "qa": "node scripts/qa.mjs && node scripts/study-test.mjs",
     "qa:links": "node scripts/link-audit.mjs"
   },
   "engines": {

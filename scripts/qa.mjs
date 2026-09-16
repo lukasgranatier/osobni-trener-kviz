@@ -36,6 +36,12 @@ for (const category of CATEGORY_META) {
   }
 }
 
+const EXAM_PER_CATEGORY = 5;
+for (const category of CATEGORY_META) {
+  const available = questions.filter((question) => question.category === category.id).length;
+  assert(available >= EXAM_PER_CATEGORY, `${category.title}: na zkouškový režim je potřeba alespoň ${EXAM_PER_CATEGORY} otázek.`);
+}
+
 for (const question of questions) {
   assert(categoryIds.has(question.category), `${question.id}: neznámá kategorie.`);
   assert(!ids.has(question.id), `${question.id}: duplicitní ID.`);

@@ -80,11 +80,28 @@
             <div class="start-actions">
               <button class="primary-button" id="startFull" type="button">Projít všech 120</button>
               <button class="secondary-button" id="startQuick" type="button">Rychlých 20</button>
-              <button class="secondary-button review-button" id="startReview" type="button" hidden>
-                Opakování chyb <span id="reviewCount">0</span>
-              </button>
               <button class="text-button" id="startMix" type="button">Mix 60 ze všech oblastí</button>
             </div>
+
+          </div>
+
+          <div class="study-actions" id="studyActions">
+            <button class="chip-button" id="startExam" type="button">
+              <strong>Zkouškový režim</strong>
+              <small>55 otázek, bez nápovědy</small>
+            </button>
+            <button class="chip-button" id="startReview" type="button" hidden>
+              <strong>Opakování chyb <span id="reviewCount">0</span></strong>
+              <small>otázky, které nesedly</small>
+            </button>
+            <button class="chip-button" id="startFlagged" type="button" hidden>
+              <strong>Označené <span id="flaggedCount">0</span></strong>
+              <small>vrátit se k nim později</small>
+            </button>
+            <button class="chip-button" id="startWeak" type="button" hidden>
+              <strong>Nejslabší oblast</strong>
+              <small id="weakLabel">—</small>
+            </button>
           </div>
 
           <div class="method-note">
@@ -107,6 +124,7 @@
               <span id="quizCounter">Otázka 1 z 120</span>
             </div>
             <div class="score-pill"><span>Na první pokus</span><strong id="quizScore">0</strong></div>
+            <div class="score-pill exam-timer" id="examTimer" hidden><span>Čas</span><strong id="examTime">0:00</strong></div>
           </div>
 
           <div class="progress-track" aria-hidden="true"><progress id="quizProgressBar" max="100" value="0">0 %</progress></div>
@@ -114,7 +132,12 @@
           <article class="question-sheet" id="questionSheet">
             <div class="question-meta">
               <span id="questionType">Pojem a význam</span>
-              <span id="questionId">A-001</span>
+              <span class="question-meta-right">
+                <span id="questionId">A-001</span>
+                <button class="flag-button" id="flagQuestion" type="button" aria-pressed="false" aria-label="Označit otázku k pozdějšímu návratu">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V4.5h11l-2.2 4 2.2 4H6"/></svg>
+                </button>
+              </span>
             </div>
             <h2 id="questionText"></h2>
             <div class="answers" id="answers" role="group" aria-labelledby="questionText"></div>
@@ -140,7 +163,7 @@
         <section class="result-view" id="resultView" hidden aria-labelledby="resultTitle">
           <div class="result-ring" id="resultRing">
             <span id="resultPercent">0 %</span>
-            <small>na první pokus</small>
+            <small id="resultRingLabel">na první pokus</small>
           </div>
           <div class="result-copy">
             <span class="section-kicker">Série dokončena</span>
@@ -151,6 +174,7 @@
               <button class="secondary-button" id="returnHome" type="button">Zpět na přehled</button>
             </div>
           </div>
+          <div class="result-breakdown" id="resultBreakdown" hidden></div>
         </section>
       </main>
 
