@@ -7,7 +7,7 @@ build/
 .cache/
 .netlify/
 playwright-report/
+.playwright-cli/
 test-results/
 output/playwright/
 *.log
-

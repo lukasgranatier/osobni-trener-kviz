@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="cs" data-theme="auto">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Interaktivní český kvíz s 1 100 ověřenými otázkami pro profesní kvalifikaci Osobní trenér/trenérka ve fitness 74-035-M."
+    />
+    <meta name="theme-color" content="#f4f7f8" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d1518" media="(prefers-color-scheme: dark)" />
+    <title>Trenér 74 — studijní kvíz</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Přejít na obsah</a>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Trenér 74 – domů">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </span>
+          <span>
+            <strong>Trenér 74</strong>
+            <small>Studijní kvíz</small>
+          </span>
+        </a>
+
+        <div class="topbar-actions">
+          <button class="icon-button" id="sourcesButton" type="button" aria-label="Otevřít odborné zdroje">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h9.25A2.75 2.75 0 0 1 18 6.5v13.75H8.75A2.75 2.75 0 0 1 6 17.5V3.75Zm0 13.75A2.75 2.75 0 0 1 8.75 14.75H18M9.25 7.5h5.5M9.25 10.5h4"/></svg>
+          </button>
+          <button class="theme-toggle" id="themeToggle" type="button" aria-label="Změnit barevný režim">
+            <span class="theme-icon" aria-hidden="true"></span>
+            <span id="themeLabel">Automaticky</span>
+          </button>
+        </div>
+      </header>
+
+      <aside class="category-rail" aria-label="Kategorie kvízu">
+        <div class="rail-heading">
+          <p>Kompetence NSK</p>
+          <span id="overallProgress">0 / 1 100</span>
+        </div>
+        <nav id="categoryNav"></nav>
+      </aside>
+
+      <main id="main" tabindex="-1">
+        <section class="welcome-view" id="welcomeView" aria-labelledby="welcomeTitle">
+          <div class="welcome-copy">
+            <div class="qualification-line">
+              <span>74-035-M</span>
+              <span>11 oblastí</span>
+              <span>1 100 otázek</span>
+            </div>
+            <h1 id="welcomeTitle">Rozumět pohybu.<br />Umět vést člověka.</h1>
+            <p>
+              Procvičujte přesný rozsah profesní kvalifikace osobního trenéra.
+              Každá otázka má čtyři možnosti, jednu správnou odpověď a dohledatelný zdroj.
+            </p>
+          </div>
+
+          <div class="start-panel" aria-labelledby="startTitle">
+            <div class="start-panel-head">
+              <div>
+                <span class="section-kicker">Vybraná oblast</span>
+                <h2 id="startTitle">Anatomie a fyziologie</h2>
+              </div>
+              <span class="category-number" id="selectedNumber" aria-hidden="true">01</span>
+            </div>
+            <p id="selectedDescription"></p>
+            <div class="category-meter" aria-label="Postup ve vybrané oblasti">
+              <progress id="selectedMeter" max="100" value="0">0 %</progress>
+              <strong id="selectedProgress">0 / 100 zvládnuto</strong>
+            </div>
+            <div class="start-actions">
+              <button class="primary-button" id="startFull" type="button">Projít všech 100</button>
+              <button class="secondary-button" id="startQuick" type="button">Rychlých 20</button>
+              <button class="text-button" id="startMix" type="button">Mix 30 ze všech oblastí</button>
+            </div>
+          </div>
+
+          <div class="method-note">
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.5a12.5 12.5 0 1 0 0 25 12.5 12.5 0 0 0 0-25Zm0 5v8l5 3"/></svg>
+            <div>
+              <strong>Bez časového stresu</strong>
+              <p>Chybná volba neodhalí řešení. Zkuste otázku znovu a vysvětlení se zobrazí až po správné odpovědi.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="quiz-view" id="quizView" hidden aria-live="polite">
+          <div class="quiz-toolbar">
+            <button class="back-button" id="exitQuiz" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+              Přehled
+            </button>
+            <div class="quiz-progress-copy">
+              <strong id="quizCategory">Anatomie a fyziologie</strong>
+              <span id="quizCounter">Otázka 1 z 100</span>
+            </div>
+            <div class="score-pill"><span>Na první pokus</span><strong id="quizScore">0</strong></div>
+          </div>
+
+          <div class="progress-track" aria-hidden="true"><progress id="quizProgressBar" max="100" value="0">0 %</progress></div>
+
+          <article class="question-sheet" id="questionSheet">
+            <div class="question-meta">
+              <span id="questionType">Pojem a význam</span>
+              <span id="questionId">A-001</span>
+            </div>
+            <h2 id="questionText"></h2>
+            <div class="answers" id="answers" role="group" aria-labelledby="questionText"></div>
+
+            <div class="feedback" id="feedback" hidden>
+              <div class="feedback-icon" aria-hidden="true"></div>
+              <div>
+                <strong id="feedbackTitle"></strong>
+                <p id="feedbackText"></p>
+                <div class="source-links" id="questionSources"></div>
+              </div>
+            </div>
+
+            <button class="primary-button next-button" id="nextQuestion" type="button" hidden>Další otázka</button>
+          </article>
+        </section>
+
+        <section class="result-view" id="resultView" hidden aria-labelledby="resultTitle">
+          <div class="result-ring" id="resultRing">
+            <span id="resultPercent">0 %</span>
+            <small>na první pokus</small>
+          </div>
+          <div class="result-copy">
+            <span class="section-kicker">Série dokončena</span>
+            <h2 id="resultTitle">Dobrá práce.</h2>
+            <p id="resultSummary"></p>
+            <div class="result-actions">
+              <button class="primary-button" id="repeatQuiz" type="button">Procvičit znovu</button>
+              <button class="secondary-button" id="returnHome" type="button">Zpět na přehled</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Neoficiální studijní pomůcka · obsah ověřen 16. 9. 2026</p>
+        <button id="aboutButton" type="button">O projektu</button>
+      </footer>
+    </div>
+
+    <dialog id="sourcesDialog" aria-labelledby="sourcesTitle">
+      <div class="dialog-head">
+        <div>
+          <span class="section-kicker">Fact-check</span>
+          <h2 id="sourcesTitle">Odborné zdroje</h2>
+        </div>
+        <button class="icon-button dialog-close" type="button" aria-label="Zavřít zdroje">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <p class="dialog-intro">
+        Rozsah oblastí vychází z aktuálního hodnoticího standardu NSK 74-035-M.
+        Jednotlivé odpovědi jsou navázané na primární odborné zdroje níže.
+      </p>
+      <div class="source-list" id="sourceList"></div>
+    </dialog>
+
+    <dialog id="aboutDialog" aria-labelledby="aboutTitle">
+      <div class="dialog-head">
+        <div>
+          <span class="section-kicker">O projektu</span>
+          <h2 id="aboutTitle">Co tento kvíz je — a není</h2>
+        </div>
+        <button class="icon-button dialog-close" type="button" aria-label="Zavřít informace">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </button>
+      </div>
+      <div class="about-copy">
+        <p>
+          Jde o neoficiální studijní pomůcku vytvořenou podle veřejného hodnoticího standardu
+          profesní kvalifikace Osobní trenér/trenérka ve fitness (74-035-M) a veřejného popisu
+          kurzu Improve Academy.
+        </p>
+        <p>
+          Nejde o oficiální otázky Improve Academy ani NSK a nenahrazuje praktickou výuku,
+          nácvik první pomoci, odbornou diagnostiku nebo zdravotnické poradenství.
+        </p>
+        <p>
+          Průběh se ukládá jen ve vašem prohlížeči. Web nemá účet, analytiku ani formulář a
+          neposílá žádná studijní data na server.
+        </p>
+      </div>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
