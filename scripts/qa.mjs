@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { buildQuestionBank, CATEGORY_META, CONCEPTS, SOURCES } from "../data.js";
+import { buildQuestionBank, CATEGORY_META, CONCEPTS, SOURCES } from "../public/data.js";
 
 const errors = [];
 const questions = buildQuestionBank();
@@ -57,9 +57,9 @@ for (const [sourceId, source] of Object.entries(SOURCES)) {
 }
 
 const [html, css, app, netlify] = await Promise.all([
-  readFile(new URL("../index.html", import.meta.url), "utf8"),
-  readFile(new URL("../styles.css", import.meta.url), "utf8"),
-  readFile(new URL("../app.js", import.meta.url), "utf8"),
+  readFile(new URL("../public/index.html", import.meta.url), "utf8"),
+  readFile(new URL("../public/styles.css", import.meta.url), "utf8"),
+  readFile(new URL("../public/app.js", import.meta.url), "utf8"),
   readFile(new URL("../netlify.toml", import.meta.url), "utf8"),
 ]);
 
