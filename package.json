@@ -1,0 +1,13 @@
+{
+  "name": "osobni-trener-kviz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "qa": "node scripts/qa.mjs",
+    "qa:links": "node scripts/link-audit.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
