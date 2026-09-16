@@ -31,6 +31,9 @@ const elements = {
   startFull: document.querySelector("#startFull"),
   startQuick: document.querySelector("#startQuick"),
   startMix: document.querySelector("#startMix"),
+  startReview: document.querySelector("#startReview"),
+  reviewCount: document.querySelector("#reviewCount"),
+  skipQuestion: document.querySelector("#skipQuestion"),
   quizCategory: document.querySelector("#quizCategory"),
   quizCounter: document.querySelector("#quizCounter"),
   quizScore: document.querySelector("#quizScore"),
@@ -66,13 +69,15 @@ let session = null;
 let toastTimer = null;
 
 function loadState() {
+  const empty = { mastered: [], struggled: [] };
   try {
     const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!parsed || !Array.isArray(parsed.mastered)) return { mastered: [] };
+    if (!parsed || !Array.isArray(parsed.mastered)) return empty;
     const validIds = new Set(questionBank.map((question) => question.id));
-    return { mastered: [...new Set(parsed.mastered.filter((id) => validIds.has(id)))] };
+    const clean = (list) => [...new Set((Array.isArray(list) ? list : []).filter((id) => validIds.has(id)))];
+    return { mastered: clean(parsed.mastered), struggled: clean(parsed.struggled) };
   } catch {
-    return { mastered: [] };
+    return empty;
   }
 }
 
@@ -168,42 +173,67 @@ function selectCategory(categoryId) {
   elements.selectedMeter.textContent = `${mastered} %`;
 }
 
+function updateReviewButton() {
+  const count = persistedState.struggled.length;
+  elements.startReview.hidden = count === 0;
+  elements.reviewCount.textContent = String(count);
+}
+
 function updateProgressUi() {
   const mastered = persistedState.mastered.length;
   elements.overallProgress.textContent = `${mastered.toLocaleString("cs-CZ")} / ${questionBank.length.toLocaleString("cs-CZ")}`;
   renderCategoryNav();
+  updateReviewButton();
   selectCategory(selectedCategory);
+}
+
+/* Pořadí podle učební hodnoty: neviděné, pak ty s dřívější chybou, nakonec zvládnuté.
+   Uvnitř každé skupiny se pořadí losuje, takže opakovaná série nevypadá stejně. */
+function studyOrder(pool) {
+  const mastered = new Set(persistedState.mastered);
+  const struggled = new Set(persistedState.struggled);
+  const shuffled = shuffle(pool);
+  const unseen = shuffled.filter((question) => !mastered.has(question.id) && !struggled.has(question.id));
+  const toRepeat = shuffled.filter((question) => struggled.has(question.id));
+  const done = shuffled.filter((question) => mastered.has(question.id) && !struggled.has(question.id));
+  return [...unseen, ...toRepeat, ...done];
 }
 
 function balancedMix(count) {
   const pools = Object.fromEntries(
-    CATEGORY_META.map((category) => [category.id, shuffle(questionsByCategory[category.id])]),
+    CATEGORY_META.map((category) => [category.id, studyOrder(questionsByCategory[category.id])]),
   );
   const categoryOrder = shuffle(CATEGORY_META.map((category) => category.id));
   const selected = [];
   let round = 0;
   while (selected.length < count) {
     const categoryId = categoryOrder[selected.length % categoryOrder.length];
-    selected.push(pools[categoryId][round]);
+    const question = pools[categoryId][round];
+    if (question) selected.push(question);
     if (selected.length % categoryOrder.length === 0) round += 1;
+    if (round > count) break;
   }
   return shuffle(selected);
 }
 
 function pickQuestions(categoryId, count) {
-  const mastered = new Set(persistedState.mastered);
-  const pool = shuffle(questionsByCategory[categoryId]);
-  const unseen = pool.filter((question) => !mastered.has(question.id));
-  const seen = pool.filter((question) => mastered.has(question.id));
-  return [...unseen, ...seen].slice(0, count);
+  return studyOrder(questionsByCategory[categoryId]).slice(0, count);
+}
+
+function struggledQuestions(limit) {
+  const struggled = new Set(persistedState.struggled);
+  return shuffle(questionBank.filter((question) => struggled.has(question.id))).slice(0, limit);
 }
 
 function startQuiz(mode, categoryId = selectedCategory) {
   let questions;
   let title;
   if (mode === "mix") {
-    questions = balancedMix(30);
+    questions = balancedMix(60);
     title = "Mix všech oblastí";
+  } else if (mode === "review") {
+    questions = struggledQuestions(60);
+    title = "Opakování chyb";
   } else {
     const count = mode === "quick" ? 20 : questionsByCategory[categoryId].length;
     questions = pickQuestions(categoryId, count);
@@ -219,6 +249,7 @@ function startQuiz(mode, categoryId = selectedCategory) {
     firstTryCorrect: 0,
     hadWrongAttempt: false,
     answered: false,
+    skipped: new Set(),
   };
 
   elements.welcomeView.hidden = true;
@@ -246,6 +277,7 @@ function renderQuestion() {
   elements.feedback.hidden = true;
   elements.feedback.className = "feedback";
   elements.nextQuestion.hidden = true;
+  elements.skipQuestion.hidden = false;
   elements.questionSources.replaceChildren();
 
   question.options.forEach((option, index) => {
@@ -278,6 +310,10 @@ function checkAnswer(button, selectedIndex) {
   const question = session.questions[session.index];
   if (selectedIndex !== question.correctIndex) {
     session.hadWrongAttempt = true;
+    if (!persistedState.struggled.includes(question.id)) {
+      persistedState.struggled.push(question.id);
+      saveState();
+    }
     button.disabled = true;
     button.classList.add("is-wrong");
     elements.feedback.hidden = false;
@@ -320,12 +356,24 @@ function checkAnswer(button, selectedIndex) {
     elements.questionSources.append(link);
   });
 
+  let stateChanged = false;
   if (!persistedState.mastered.includes(question.id)) {
     persistedState.mastered.push(question.id);
+    stateChanged = true;
+  }
+  if (!session.hadWrongAttempt) {
+    const position = persistedState.struggled.indexOf(question.id);
+    if (position >= 0) {
+      persistedState.struggled.splice(position, 1);
+      stateChanged = true;
+    }
+  }
+  if (stateChanged) {
     saveState();
     updateProgressUi();
   }
 
+  elements.skipQuestion.hidden = true;
   elements.nextQuestion.hidden = false;
   elements.nextQuestion.textContent = session.index === session.questions.length - 1 ? "Dokončit sérii" : "Další otázka";
   elements.nextQuestion.focus({ preventScroll: true });
@@ -372,6 +420,24 @@ function transitionToQuestion() {
   }, 200);
 }
 
+/* Přeskočení posune sérii dál a otázku uloží do opakování chyb — počítadlo
+   se tak chová stejně jako po odpovědi a série se nikdy nezacyklí. */
+function skipQuestion() {
+  if (!session || session.answered || session.transitioning) return;
+  const question = session.questions[session.index];
+  session.skipped.add(question.id);
+
+  if (!persistedState.struggled.includes(question.id)) {
+    persistedState.struggled.push(question.id);
+    saveState();
+    updateReviewButton();
+  }
+
+  session.answered = true;
+  showToast("Přeskočeno — otázka se vrátí v opakování chyb.");
+  goToNextQuestion();
+}
+
 function goToNextQuestion() {
   if (!session?.answered || session.transitioning) return;
   session.transitioning = true;
@@ -389,7 +455,10 @@ function finishQuiz() {
   elements.resultView.hidden = false;
   countUp(elements.resultPercent, percent);
   elements.resultTitle.textContent = percent >= 90 ? "Výborná jistota." : percent >= 70 ? "Pevný základ." : "Je na čem stavět.";
-  elements.resultSummary.textContent = `Na první pokus jste správně vyřešili ${session.firstTryCorrect} z ${session.questions.length} otázek. Každou chybnou otázku jste nakonec zvládli správně.`;
+  const skippedCount = session.skipped.size;
+  const skippedWord = skippedCount === 1 ? "jednu otázku" : skippedCount < 5 ? `${skippedCount} otázky` : `${skippedCount} otázek`;
+  const skippedNote = skippedCount === 0 ? "" : ` Přeskočili jste ${skippedWord}; najdete je v opakování chyb.`;
+  elements.resultSummary.textContent = `Na první pokus jste správně vyřešili ${session.firstTryCorrect} z ${session.questions.length} otázek.${skippedNote}`;
   elements.resultView.scrollIntoView({ behavior: "smooth", block: "nearest" });
   elements.repeatQuiz.focus({ preventScroll: true });
 }
@@ -496,6 +565,8 @@ function init() {
   updateProgressUi();
 
   elements.startFull.addEventListener("click", () => startQuiz("full"));
+  elements.startReview.addEventListener("click", () => startQuiz("review"));
+  elements.skipQuestion.addEventListener("click", skipQuestion);
   elements.startQuick.addEventListener("click", () => startQuiz("quick"));
   elements.startMix.addEventListener("click", () => startQuiz("mix"));
   elements.nextQuestion.addEventListener("click", goToNextQuestion);
@@ -519,6 +590,9 @@ function init() {
     } else if ((event.key === "Enter" || event.key === "ArrowRight") && session?.answered) {
       event.preventDefault();
       goToNextQuestion();
+    } else if (event.key.toLowerCase() === "s" && !session?.answered) {
+      event.preventDefault();
+      skipQuestion();
     }
   });
 }
