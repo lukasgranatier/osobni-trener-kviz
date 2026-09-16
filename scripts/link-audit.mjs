@@ -1,4 +1,4 @@
-import { SOURCES } from "../data.js";
+import { SOURCES } from "../public/data.js";
 
 const entries = Object.entries(SOURCES);
 const results = [];
