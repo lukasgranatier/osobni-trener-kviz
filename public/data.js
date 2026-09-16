@@ -279,6 +279,11 @@ export const SOURCES = {
     organization: "StatPearls / NCBI Bookshelf",
     url: "https://www.ncbi.nlm.nih.gov/books/NBK537139/",
   },
+  acsmScreening: {
+    title: "Applying the ACSM Preparticipation Screening Algorithm to U.S. adults",
+    organization: "Medicine & Science in Sports & Exercise 2017",
+    url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC7059860/",
+  },
   antidopingCz: {
     title: "Seznam zakázaných látek a metod dopingu 2026",
     organization: "Český Antidoping",
@@ -369,7 +374,7 @@ export const CONCEPTS = {
     c("retest", "Opakování stejného testu po stanoveném období.", "Po několika týdnech se zopakuje stejná varianta dřepu se stejným zadáním.", "Ověřuje, zda program vede k zamýšlené změně a zda je třeba jej upravit.", ["nsk", "acsmGuidelines"]),
     c("odeslání k odborníkovi", "Předání klienta zdravotnickému pracovníkovi při bolesti, akutním problému nebo nálezu mimo kompetenci trenéra.", "Nová nevysvětlená bolest a neurologické příznaky nejsou úkolem pro trenérskou diagnózu.", "Chrání klienta před zpožděním potřebné péče a trenéra před překročením odbornosti.", ["acsmGuidelines", "nsk"]),
     c("druhy diagnostiky", "Vstupní rozhovor, statické pozorování, dynamické pozorování a jednoduché funkční testy tvoří základní druhy trenérského posouzení.", "Trenér spojí anamnézu, pohled ve stoji, pozorování dřepu a stoj na jedné noze.", "Standard požaduje vyjmenovat druhy diagnostiky lidského těla pro potřeby osobního tréninku.", ["nsk", "acsmGuidelines"]),
-    c("anamnéza klienta", "Řízený rozhovor o zdravotním stavu, zkušenostech, aktivitě, cílech a omezeních před zahájením programu.", "Trenér se ptá na úrazy, léčbu, bolesti a dosavadní pohybovou zkušenost.", "Bez vstupních informací nelze bezpečně zvolit zátěž ani rozpoznat potřebu lékařského posouzení.", ["acsmGuidelines", "nsk"]),
+    c("pohybová anamnéza", "Zjištění dosavadní pohybové zkušenosti, sportů, přerušení tréninku a subjektivně vnímaných omezení pohybu.", "Klient popíše, které pohyby mu dělaly potíže a jak dlouho netrénoval.", "Doplňuje pozorování o kontext, který z jednoho testu není vidět.", ["acsmGuidelines", "nsk"]),
     c("pohybový stereotyp", "Ustálený způsob provedení opakovaného pohybu vytvořený učením a praxí.", "Chůze, dřep a kyčelní ohyb jsou pohybové stereotypy pozorovatelné během tréninku.", "Standard požaduje pojmenovat druhy pohybových stereotypů pro konkrétní předmět diagnostiky.", ["nsk", "openstaxMovement"]),
     c("goniometrie", "Měření kloubních rozsahů v jednotlivých rovinách pomocí goniometru.", "Rozsah flexe kolene se změří goniometrem přiloženým podle kostních orientačních bodů.", "Převádí pozorování na číslo, které lze porovnat při opakovaném testu.", ["statpearlsGoniometer", "acsmGuidelines"]),
     c("modelová analýza držení těla", "Ucelený postup, při kterém trenér u konkrétního klienta pozoruje z více pohledů a zaznamená zjištěné znaky bez stanovení diagnózy.", "Uchazeč u zkoušky předvede analýzu držení těla na modelovém příkladu.", "Je přímo požadovaným výkonem hodnoticího standardu, nikoli jen teoretickou znalostí.", ["nsk", "acsmGuidelines"]),
@@ -504,7 +509,7 @@ export const CONCEPTS = {
     c("cviky na zádové svaly", "Tahové cviky zaměřené zejména na nejširší sval zádový uložený na dolní části zad.", "Shyb, přítah v předklonu a stahování kladky jsou cviky pro záda.", "Doplňují tlakové cviky a pomáhají vyvážit program horní části těla.", ["openstaxUpperLimb", "nsk"]),
     c("cviky na dolní končetiny", "Vícekloubové cviky zatěžující zejména čtyřhlavý sval stehenní a velký sval hýžďový.", "Dřep, leg press a výpad jsou základní cviky pro dolní končetiny.", "Umožňují vybrat variantu podle mobility, techniky a cíle klienta.", ["openstaxLowerLimb", "nsk"]),
     c("devět předvedených cviků", "Praktická část zkoušky, ve které uchazeč vyjmenuje cviky pro tři svalové partie a devět z nich předvede.", "Uchazeč cviky předvede a popíše nastavení, dýchání i nejčastější chyby.", "Jde o přímý požadavek hodnoticího standardu na vedení osobního tréninku.", ["nsk", "improve"]),
-    c("ucelená tréninková jednotka u zkoušky", "Souvislé vedení lekce s komunikací s klientem v časovém limitu daném zkouškou.", "Uchazeč vede rozcvičení, hlavní část i zklidnění a průběžně komunikuje s klientem.", "Ověřuje se schopnost samostatně pracovat s klientem, nejen znalost teorie.", ["nsk", "improve"]),
+    c("hospodaření s časem v lekci", "Rozvržení lekce tak, aby se prioritní obsah stihl i při zdržení, a plynulé přechody mezi cviky.", "Když nastavení stroje trvá déle, trenér zkrátí doplňkový cvik, nikoli prioritní sérii.", "Časový skluz nemá jít na úkor nejdůležitějšího podnětu ani bezpečného ukončení lekce.", ["nsk", "armyH2f"]),
   ],
 
   psychologie: [
@@ -634,7 +639,7 @@ export const CONCEPTS = {
     c("revize po incidentu", "Následné vyhodnocení, proč ochranná opatření selhala a co se má změnit.", "Po zakopnutí se upraví ukládání pomůcek a kontrola volné zóny.", "Cílem není jen obnovit provoz, ale zabránit opakování stejné události.", ["nsk", "acsmGuidelines"]),
     c("dvě skupiny preventivních opatření", "Opatření směřující k prostředí a vybavení a opatření směřující ke klientovi a provedení cviku.", "Kontrola stroje a volné zóny patří do první skupiny, volba zátěže a technika do druhé.", "Standard požaduje rozdělit zásady prevence do dvou hlavních skupin a charakterizovat je.", ["nsk", "acsmGuidelines"]),
     c("seznámení s BOZP", "Poučení o bezpečnosti a ochraně zdraví při práci a o požární ochraně na konkrétním pracovišti.", "Před zkouškou i před prací v novém provozu se uchazeč seznámí s pravidly a seznámení se protokoluje.", "Hodnoticí standard toto seznámení výslovně vyžaduje a protokoluje.", ["nsk", "acsmGuidelines"]),
-    c("zdravotní způsobilost", "Doložení způsobilosti k výkonu pracovních činností lékařským potvrzením.", "Uchazeč předkládá lékařské potvrzení před zahájením zkoušky.", "Jde o formální podmínku uvedenou v hodnoticím standardu, nikoli o doporučení.", ["nsk", "acsmGuidelines"]),
+    c("lékařské posouzení před zátěží", "Rozhodnutí, zda klient potřebuje lékařské posouzení, podle současné pohybové aktivity, známého onemocnění a přítomných příznaků.", "Klient s bolestí na hrudi nebo závratí při námaze je odeslán k lékaři bez ohledu na to, zda dosud cvičil.", "Algoritmus ACSM rozlišuje tři výsledky: posouzení není nutné, je nutné před vysokou intenzitou, nebo před jakoukoli zátěží.", ["acsmScreening", "acsmGuidelines"]),
     c("riziko u začátečníka", "Vyšší pravděpodobnost chyby při nové dovednosti, neznámém vybavení a nepřesném odhadu vlastní zátěže.", "Nový klient dostane nižší zátěž, jednodušší variantu a bližší dohled.", "Zkušenost klienta je jedním z faktorů, které určují potřebnou míru dohledu.", ["acsmGuidelines", "nsk"]),
     c("prostředí a klimatické podmínky", "Teplota, vlhkost a proudění vzduchu ovlivňují bezpečnou dávku zátěže.", "V horkém prostředí se zkrátí intenzivní úseky a zajistí trvalý přístup k vodě.", "CDC doporučuje pít dříve, než se objeví žízeň, a při slabosti nebo mdlobě aktivitu zastavit.", ["cdcHeat", "cdcHeatIllness"]),
   ],
