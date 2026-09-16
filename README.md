@@ -17,6 +17,11 @@ Interaktivní český studijní kvíz pro kompetence profesní kvalifikace
 Projekt nepoužívá framework, runtime závislosti, analytiku, cookies ani externí
 fonty. Jde o zdrojový statický web HTML/CSS/JS.
 
+## Produkční verze
+
+Kvíz je veřejně dostupný na [osobni-trener-kviz.netlify.app](https://osobni-trener-kviz.netlify.app/).
+Nasazení se automaticky aktualizuje z větve `main` tohoto repozitáře.
+
 ## Lokální spuštění
 
 ```bash
