@@ -144,7 +144,7 @@ function renderCategoryNav() {
       progress.classList.add("complete");
       progress.textContent = "✓";
     }
-    progress.setAttribute("aria-label", `${mastered} ze 100 zvládnuto`);
+    progress.setAttribute("aria-label", `${mastered} ze ${questionsByCategory[category.id].length} zvládnuto`);
 
     button.append(index, name, progress);
     button.addEventListener("click", () => selectCategory(category.id));
@@ -162,14 +162,15 @@ function selectCategory(categoryId) {
   elements.startTitle.textContent = category.title;
   elements.selectedNumber.textContent = String(category.index).padStart(2, "0");
   elements.selectedDescription.textContent = category.description;
-  elements.selectedProgress.textContent = `${mastered} / 100 zvládnuto`;
+  elements.selectedProgress.textContent = `${mastered} / ${questionsByCategory[selectedCategory].length} zvládnuto`;
+  elements.selectedMeter.max = questionsByCategory[selectedCategory].length;
   elements.selectedMeter.value = mastered;
   elements.selectedMeter.textContent = `${mastered} %`;
 }
 
 function updateProgressUi() {
   const mastered = persistedState.mastered.length;
-  elements.overallProgress.textContent = `${mastered.toLocaleString("cs-CZ")} / 1 100`;
+  elements.overallProgress.textContent = `${mastered.toLocaleString("cs-CZ")} / ${questionBank.length.toLocaleString("cs-CZ")}`;
   renderCategoryNav();
   selectCategory(selectedCategory);
 }
@@ -204,7 +205,7 @@ function startQuiz(mode, categoryId = selectedCategory) {
     questions = balancedMix(30);
     title = "Mix všech oblastí";
   } else {
-    const count = mode === "quick" ? 20 : 100;
+    const count = mode === "quick" ? 20 : questionsByCategory[categoryId].length;
     questions = pickQuestions(categoryId, count);
     title = CATEGORY_META.find((category) => category.id === categoryId).title;
   }

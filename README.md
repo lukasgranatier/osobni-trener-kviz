@@ -6,10 +6,10 @@ Interaktivní český studijní kvíz pro kompetence profesní kvalifikace
 ## Obsah
 
 - 11 oblastí přesně podle hodnoticího standardu NSK
-- 100 unikátních otázek v každé oblasti, celkem 1 100
+- 120 unikátních otázek v každé oblasti, celkem 1 320
 - 4 možnosti a právě 1 správná odpověď
 - vysvětlení a zdroje zobrazené až po správné odpovědi
-- rychlá série 20, celá kategorie 100 a vyvážený mix 30
+- rychlá série 20, celá kategorie 120 a vyvážený mix 30
 - průběh uložený pouze lokálně v prohlížeči
 - světlý, tmavý a automatický režim
 - responzivní rozhraní navržené primárně pro iPad
@@ -48,10 +48,25 @@ Rozsah vychází z veřejného hodnoticího standardu NSK 74-035-M. Faktické
 odpovědi odkazují na primární zdroje, zejména NSK/MŠMT, OpenStax, WHO, EFSA,
 ACSM, ERC 2025, WADA 2026 a Český Antidoping. Úplný seznam je přímo v aplikaci.
 
-Databáze je sestavena z 25 odborně zdrojovaných pojmů v každé kategorii. Ke
+Databáze je sestavena z 30 odborně zdrojovaných pojmů v každé kategorii. Ke
 každému pojmu vznikají čtyři různé ověřovací otázky (definice, příklad,
-praktický význam a správné přiřazení), tedy 100 otázek na kategorii. Otázky
+praktický význam a správné přiřazení), tedy 120 otázek na kategorii. Otázky
 nejsou oficiálním ani uniklým testem NSK nebo Improve Academy.
+
+Každý pojem má nejméně dva nezávislé zdroje; kontrola `npm run qa` tento
+požadavek vynucuje. Poslední úplný fakticky ověřovací průchod proběhl
+16. 9. 2026 proti primárním dokumentům (ERC Guidelines 2025, Resuscitation
+Council UK 2025, WADA Prohibited List 2026, EFSA DRV, nařízení EU 1169/2011,
+WHO 2020, AASM/CDC, CDC NIOSH, OpenStax A&P 2e, StatPearls).
+
+### Pokrytí kritérií standardu
+
+Obsah je namapován na všech 11 odborných způsobilostí a jejich kritéria
+hodnocení, včetně dříve nepokrytých oblastí: orgánové soustavy a spoje kostry,
+začátek/úpon/funkce svalu, druhy diagnostiky a pohybové stereotypy, metody
+posilování (kruhový trénink, superséria, dropset, pyramida, rest-pause), cviky
+pro svalové partie, šokové stavy a rozdělení první pomoci, dvě skupiny
+preventivních opatření a světové antidopingové organizace.
 
 Projekt je neoficiální studijní pomůcka a není spojen s Improve Academy ani
 s Národní soustavou kvalifikací. Nenahrazuje praktickou výuku, nácvik první
