@@ -1480,29 +1480,29 @@ dialog {
 }
 
 /* --- Kvíz na tabletu naležato --------------------------------------------
-   Otázka i všechny čtyři možnosti se musí vejít bez scrollování.            */
+   Delší zadání i výklad musí zůstat čitelné; roluje hlavní obsahový panel.   */
 
 @media (min-width: 950px) and (max-height: 950px) {
   /* Mrtvý prostor pod kartou je na tabletu k ničemu — karta ať ho využije. */
   .quiz-view {
     display: flex;
     flex-direction: column;
-    min-height: 0;
-    flex: 1;
+    min-height: 100%;
+    flex: 0 0 auto;
   }
 
-  /* Karta se vejde do výšky okna; dlouhé vysvětlení roluje uvnitř, ne celá stránka. */
+  /* Karta se nesmí smrštit pod výšku textu a vytlačit odpovědi přes hlavičku. */
   .quiz-view > .question-sheet {
-    min-height: 0;
-    max-height: 100%;
-    flex: 1;
-    align-content: center;
+    width: 100%;
+    min-height: min-content;
+    max-height: none;
+    flex: 0 0 auto;
+    align-content: start;
   }
 
   .feedback {
     min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    overflow-y: visible;
   }
 
   .answers {
