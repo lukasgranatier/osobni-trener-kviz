@@ -61,11 +61,17 @@ každému pojmu vznikají čtyři různé ověřovací otázky (definice, přík
 praktický význam a správné přiřazení), tedy 120 otázek na kategorii. Otázky
 nejsou oficiálním ani uniklým testem NSK nebo Improve Academy.
 
-Každý pojem má nejméně dva nezávislé zdroje; kontrola `npm run qa` tento
-požadavek vynucuje. Poslední úplný fakticky ověřovací průchod proběhl
-16. 9. 2026 proti primárním dokumentům (ERC Guidelines 2025, Resuscitation
-Council UK 2025, WADA Prohibited List 2026, EFSA DRV, nařízení EU 1169/2011,
-WHO 2020, AASM/CDC, CDC NIOSH, OpenStax A&P 2e, StatPearls).
+Každý pojem odkazuje alespoň na jeden odborný zdroj. Dvě kapitoly jedné
+učebnice ani standard NSK a obecná příručka samy nedokazují nezávislé
+potvrzení konkrétního tvrzení. `npm run qa` kontroluje strukturu dat,
+přiřazení správných odpovědí a regresní případy nejednoznačných možností;
+neověřuje vědeckou pravdivost ani nezávislost zdrojů.
+
+Úplný obsahový průchod všech 330 pojmů a 1 320 generovaných otázek proběhl
+11. 10. 2026. [Auditní přehled](docs/factual-audit-2026-10-11.md) uvádí
+kontrolované otázky, opravy, veřejné zdroje a rozsah jejich podpory. Rozlišuje
+přímo doložené definice a doporučení od praktických trenérských příkladů;
+neznamená, že každý příklad byl samostatně ověřen klinickou studií.
 
 ### Pokrytí kritérií standardu
 

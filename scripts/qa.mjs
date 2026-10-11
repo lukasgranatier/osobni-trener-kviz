@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { buildQuestionBank, CATEGORY_META, CONCEPTS, SOURCES } from "../public/data.js";
+import { buildQuestionBank, CATEGORY_META, CONCEPTS, DISTRACTOR_GROUPS, SOURCES } from "../public/data.js";
 
 const errors = [];
 const questions = buildQuestionBank();
@@ -29,10 +29,18 @@ for (const category of CATEGORY_META) {
     assert(concept.definition.length >= 35, `${category.title}/${concept.term}: příliš krátká definice.`);
     assert(concept.example.length >= 35, `${category.title}/${concept.term}: příliš krátký příklad.`);
     assert(concept.importance.length >= 35, `${category.title}/${concept.term}: příliš krátké vysvětlení významu.`);
-    assert(concept.sources.length >= 2, `${category.title}/${concept.term}: každý pojem musí mít alespoň dva nezávislé zdroje.`);
+    assert(concept.sources.length >= 1, `${category.title}/${concept.term}: chybí odborný zdroj.`);
+    assert(new Set(concept.sources).size === concept.sources.length,
+      `${category.title}/${concept.term}: duplicitní zdrojové ID.`);
     for (const sourceId of concept.sources) {
       assert(sourceIds.has(sourceId), `${category.title}/${concept.term}: neznámý zdroj ${sourceId}.`);
     }
+  }
+  for (const group of DISTRACTOR_GROUPS[category.id] ?? []) {
+    assert(group.length >= 2 && new Set(group).size === group.length,
+      `${category.title}: neplatná skupina překrývajících se pojmů.`);
+    assert(group.every((position) => Number.isInteger(position) && position >= 1 && position <= concepts.length),
+      `${category.title}: skupina odkazuje na neexistující pojem.`);
   }
 }
 
@@ -89,5 +97,6 @@ if (errors.length > 0) {
   console.log(`- ${questions.length.toLocaleString("cs-CZ")} unikátních otázek`);
   console.log(`- ${Object.keys(SOURCES).length} odborných zdrojů`);
   console.log("- 4 unikátní možnosti a právě 1 správný index u každé otázky");
+  console.log("- strukturální QA neověřuje faktickou správnost ani nezávislost zdrojů");
   console.log("- česká lokalizace, iPad safe areas, reduced motion a bezpečnostní hlavičky");
 }
